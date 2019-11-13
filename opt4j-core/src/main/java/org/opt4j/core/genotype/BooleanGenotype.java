@@ -87,4 +87,15 @@ public class BooleanGenotype extends ArrayList<Boolean> implements ListGenotype<
 			}
 		}
 	}
+
+	public void init(boolean[] a) {
+		int size = a.length;
+		for (int i = 0; i < a.length; i++) {
+			if (i >= size()) {
+				add(a[i]);
+			} else {
+				set(i, a[i]);
+			}
+		}
+	}
 }
