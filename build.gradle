@@ -5,6 +5,9 @@ apply plugin: 'base'
 apply plugin: 'application'
 apply plugin: 'eclipse'
 apply plugin: 'jacoco'
+jacoco {
+	 toolVersion = "0.8.2"
+}
 
 mainClassName = 'org.opt4j.core.start.Opt4J'
 
@@ -64,6 +67,9 @@ subprojects {
     apply plugin: 'signing'
     apply plugin: 'eclipse'
     apply plugin: 'jacoco'
+	jacoco {
+		toolVersion = "0.8.2"
+	}
 
     sourceCompatibility = 1.8 
 	targetCompatibility = 1.8
