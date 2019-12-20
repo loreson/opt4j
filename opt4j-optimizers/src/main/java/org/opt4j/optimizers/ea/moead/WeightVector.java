@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Opt4J
+ * Copyright (c) 2019 Opt4J
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,12 @@ public class WeightVector {
     double[] entries;
 
 	public double L2Norm(){
-        return 0;
+		double result = 0.0;
+		for(double elem: entries)
+		{
+			result+= elem*elem;
+		}
+		return Math.sqrt(result);
     }
 
     public int size(){
@@ -43,7 +48,16 @@ public class WeightVector {
 	}
 
 	public double dot(WeightVector v){
-		return 0;
+		if (entries.length != v.entries.length)
+		{
+			throw new IllegalArgumentException("Can't take dot Product of Vectors with different size");
+		}
+		double result = 0.0;
+		for(int i =0; i<entries.length; i++)
+		{
+			result+= entries[i]*v.entries[i];
+		}
+		return result;
 	}
 
 	// TODO add more maybe?
