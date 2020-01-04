@@ -23,7 +23,6 @@
 package org.opt4j.optimizers.ea.moead;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -39,12 +38,7 @@ class SimplexFillRandom implements SimplexFill {
     private Random rand;
 
     public SimplexFillRandom() {
-        try {
-            rand = SecureRandom.getInstanceStrong();
-        } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        rand = new Random();
     }
     @Override
     public List<WeightVector> fill (int N, int m)
