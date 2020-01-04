@@ -24,7 +24,6 @@ package org.opt4j.optimizers.ea.moead;
 
 
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,9 +43,9 @@ class MaximallySparseSelection implements Selection
     }
     @Override
     public List<WeightVector> select(List<WeightVector> initial, int N){
-        List<WeightVector> result = new ArrayList<WeightVector>();
+        List<WeightVector> result = new ArrayList<>();
         int M;
-        if(initial.size() == 0){
+        if(initial.isEmpty()){
             if(N == 0){
                 return result; //return an empty List here
             }
@@ -70,7 +69,6 @@ class MaximallySparseSelection implements Selection
             result.add(new WeightVector(extreme));
         }
         for(int k = M; k<N; k++){
-            
             int max =0;
             double maxDist = 0;
             for(int j = 0; j < initial.size(); j++){

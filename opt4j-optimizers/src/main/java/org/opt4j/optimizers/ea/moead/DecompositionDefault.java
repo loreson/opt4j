@@ -21,7 +21,6 @@
  *******************************************************************************/
 package org.opt4j.optimizers.ea.moead;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DecompositionDefault implements Decomposition {

@@ -37,8 +37,7 @@ class SimplexFillRandom implements SimplexFill {
     @Override
     public List<WeightVector> fill (int N, int m)
     {
-        List<WeightVector> points =new ArrayList<WeightVector>();
-        Random rand = new Random();
+        List<WeightVector> points =new ArrayList<>();
 
         for(int i = 0; i<N; i++)
         {
