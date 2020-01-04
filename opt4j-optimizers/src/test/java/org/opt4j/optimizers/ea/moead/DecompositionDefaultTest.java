@@ -120,7 +120,7 @@ public class DecompositionDefaultTest {
 
     @Test
     public void TenObjectives(){
-        final int count = 250;
+        final int count = 350;
         Decomposition decomp = new DecompositionDefault();
         List<WeightVector> vecs = decomp.decompose(count, 10);
         assertEquals(count, vecs.size());
