@@ -22,18 +22,30 @@
 
 package org.opt4j.optimizers.ea.moead;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-//TODO: use better RNG here
 import java.util.Random;
 
 class SimplexFillRandom implements SimplexFill {
     /*
-    Fills a unit simplex of dimension m with N points, selected after Fig. 1 in
-    A. Jaszkiewicz, "On the performance of multiple-objective genetic local search on the 0/1
-    knapsack problem - a comparative experiment,"
-    in IEEE Transactions on Evolutionary Computation, vol. 6, no. 4, pp. 402-412, Aug. 2002.
-    */
+     * Fills a unit simplex of dimension m with N points, selected after Fig. 1 in
+     * A. Jaszkiewicz, "On the performance of multiple-objective genetic local
+     * search on the 0/1 knapsack problem - a comparative experiment," in IEEE
+     * Transactions on Evolutionary Computation, vol. 6, no. 4, pp. 402-412, Aug.
+     * 2002.
+     */
+    private Random rand;
+
+    public SimplexFillRandom() {
+        try {
+            rand = SecureRandom.getInstanceStrong();
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
     @Override
     public List<WeightVector> fill (int N, int m)
     {
