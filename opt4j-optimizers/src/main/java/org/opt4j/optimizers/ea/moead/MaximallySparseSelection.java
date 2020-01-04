@@ -41,16 +41,16 @@ class MaximallySparseSelection implements Selection
         }
         return Math.sqrt(dist);
     }
-    @Override
-    public List<WeightVector> select(List<WeightVector> initial, int N){
-        List<WeightVector> result = new ArrayList<>();
+    private int getDimension(List<WeightVector> initial, int N)
+    {
         int M;
         if(initial.isEmpty()){
-            if(N == 0){
-                return result; //return an empty List here
+            if(N > 0){
+                throw new IllegalArgumentException("Can not use MaximallySparseSelection to select vectors for zero objectives");
             }
-            else{
-            M = 0; //Otherwise this will throw later
+            else
+            {
+                return 0;
             }
         }
         else{
@@ -62,6 +62,12 @@ class MaximallySparseSelection implements Selection
         if(  initial.size() < N-M){
             throw new IllegalArgumentException("to small initial set "+initial.size()+" to select "+ N +"Vectors");
         }
+        return M;
+    }
+    @Override
+    public List<WeightVector> select(List<WeightVector> initial, int N){
+        List<WeightVector> result = new ArrayList<>();
+        int M = getDimension(initial, N);
         for(int i = 0; i < M; i++)
         {
             double[] extreme = new double[M];
