@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Opt4J
+ * Copyright (c) 2014 Opt4J
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,55 +20,11 @@
  * SOFTWARE.
  *******************************************************************************/
  
+
 package org.opt4j.optimizers.ea.moead;
 
-public class WeightVector {
+import java.util.List;
 
-    double[] entries;
-
-	public double L2Norm(){
-		double result = 0.0;
-		for(double elem: entries)
-		{
-			result+= elem*elem;
-		}
-		return Math.sqrt(result);
-    }
-
-    public int size(){
-        return entries.length;
-    }
-
-    WeightVector(double[] entries){
-        this.entries = entries;
-	}
-	
-	public double get(int index){
-		return this.entries[index];
-	}
-
-	// FIXME maxbe make dot and euclidean distance static class methods
-	public double dot(WeightVector v){
-		if (entries.length != v.entries.length)
-		{
-			throw new IllegalArgumentException("Can't take dot Product of Vectors with different size");
-		}
-		double result = 0.0;
-		for(int i =0; i<entries.length; i++)
-		{
-			result+= entries[i]*v.entries[i];
-		}
-		return result;
-	}
-
-	public double euclideanDistance(WeightVector v){
-		if (entries.length != v.entries.length){
-			throw new IllegalArgumentException("Can't compute euclidean distance of vectors with different dimensions");
-		}
-		double distanceSquared = 0;
-		for(int i = 0; i < entries.length; i++){
-			distanceSquared += (entries[i] - v.entries[i]) * (entries[i] - v.entries[i]);
-		}
-		return Math.sqrt(distanceSquared);
-	}
+public interface NeighborhoodCreation{
+    public int[] create(WeightVector v, List<WeightVector> candidates, int neighborhoodSize);
 }

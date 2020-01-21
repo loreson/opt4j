@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Opt4J
+ * Copyright (c) 2014 Opt4J
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,55 +20,39 @@
  * SOFTWARE.
  *******************************************************************************/
  
+
 package org.opt4j.optimizers.ea.moead;
 
-public class WeightVector {
+import java.util.List;
+import java.util.Random;
 
-    double[] entries;
+public class RandomNeighborhoodCreation implements NeighborhoodCreation{
+    private Random random;
 
-	public double L2Norm(){
-		double result = 0.0;
-		for(double elem: entries)
-		{
-			result+= elem*elem;
-		}
-		return Math.sqrt(result);
+    public RandomNeighborhoodCreation(){
+        random = new Random();
     }
 
-    public int size(){
-        return entries.length;
+    public RandomNeighborhoodCreation(long seed){
+        random = new Random(seed);
     }
-
-    WeightVector(double[] entries){
-        this.entries = entries;
-	}
-	
-	public double get(int index){
-		return this.entries[index];
-	}
-
-	// FIXME maxbe make dot and euclidean distance static class methods
-	public double dot(WeightVector v){
-		if (entries.length != v.entries.length)
-		{
-			throw new IllegalArgumentException("Can't take dot Product of Vectors with different size");
-		}
-		double result = 0.0;
-		for(int i =0; i<entries.length; i++)
-		{
-			result+= entries[i]*v.entries[i];
-		}
-		return result;
-	}
-
-	public double euclideanDistance(WeightVector v){
-		if (entries.length != v.entries.length){
-			throw new IllegalArgumentException("Can't compute euclidean distance of vectors with different dimensions");
-		}
-		double distanceSquared = 0;
-		for(int i = 0; i < entries.length; i++){
-			distanceSquared += (entries[i] - v.entries[i]) * (entries[i] - v.entries[i]);
-		}
-		return Math.sqrt(distanceSquared);
-	}
+   
+    public int[] create(WeightVector v, List<WeightVector> candidates, int neighborhoodSize){
+        int numCandidates = candidates.size(); 
+        if(numCandidates < neighborhoodSize){
+            throw new IllegalArgumentException("Cannot create a neighborhood of size "+ neighborhoodSize + "with only "+ numCandidates + "subproblems!");
+        }
+        if(v == null){
+            throw new IllegalArgumentException("Reference weight vector cannot be null!");
+        }
+        if(neighborhoodSize == 0){
+            throw new IllegalArgumentException("Neighborhood size cannot be 0!");
+        }
+        int[] neighborhood = new int[neighborhoodSize];
+        for(int i = 0; i < neighborhoodSize; i++){
+            neighborhood[i] = random.nextInt(numCandidates);
+        }
+        
+        return neighborhood;
+    }
 }
