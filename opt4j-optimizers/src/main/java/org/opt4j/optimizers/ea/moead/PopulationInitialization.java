@@ -22,9 +22,8 @@
  
 package org.opt4j.optimizers.ea.moead;
 
-import java.util.List;
+import org.opt4j.core.optimizer.Population;
 
-import org.opt4j.core.Genotype;
 
 public interface PopulationInitialization {
 
@@ -32,5 +31,5 @@ public interface PopulationInitialization {
      * @param m
      *      number of created genotypes 
      * */ 
-    public List<Genotype> initialization(int m);
+    public Population initialization(int m);
 }

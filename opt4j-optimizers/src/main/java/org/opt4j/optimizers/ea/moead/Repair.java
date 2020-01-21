@@ -22,10 +22,10 @@
  
 package org.opt4j.optimizers.ea.moead;
 
-import org.opt4j.core.Genotype;
+import org.opt4j.core.Individual;
 
 public interface Repair {
 
     // TODO add objectives as input
-    public Genotype repairSolution(Genotype solution);
+    public Individual repairSolution(Individual solution);
 }
