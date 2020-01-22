@@ -22,10 +22,10 @@
 
 package org.opt4j.optimizers.ea.moead;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.opt4j.core.common.random.RandomDefault;
 
 class SimplexFillRandom implements SimplexFill {
     /*
@@ -38,7 +38,7 @@ class SimplexFillRandom implements SimplexFill {
     private Random rand;
 
     public SimplexFillRandom() {
-        rand = new Random();
+        rand = new RandomDefault();
     }
     @Override
     public List<WeightVector> fill (int N, int m)
