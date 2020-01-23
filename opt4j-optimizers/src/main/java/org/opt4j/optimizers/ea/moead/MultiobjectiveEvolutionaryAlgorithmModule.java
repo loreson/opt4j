@@ -44,16 +44,27 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 	@MaxIterations
 	protected int generations = 100;
 
+	@Constant(value = "m", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
+	@Info("The number of objectives per subproblem")
+	@Order(1)
+	protected int m = 5;
+
 	@Constant(value = "N", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
 	@Info("The number of the subproblems considered.")
-	@Order(1)
+	@Order(2)
 	protected int N = 10;
 
-	protected int parentsPerGeneration = 25;
 	@Constant(value = "T", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
 	@Info("The number of the weight vectors in the neighborhood.")
-	@Order(2)
+	@Order(3)
 	protected int T = 10;
+
+	@Constant(value = "newIndividuals", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
+	@Info("The number of new solutions per iteration")
+	@Order(4)
+	protected int newIndividuals = 1;
+
+
 
 	/**
 	 * Returns the number of generations.
@@ -75,6 +86,27 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 		this.generations = generations;
 	}
 
+	
+	/**
+	 * Returns the number of subproblems.
+	 * 
+	 * @return the number of subproblems
+	 */
+	public int getSubproblemsCount() {
+		return N;
+	}
+
+	/**
+	 * Sets the number of subproblems.
+	 * 
+	 * @param N the number of subproblems
+	 */
+	public void setSubproblemsCount(int N) {
+		this.N = N;
+	}
+
+	
+
 	/**
 	 * Returns The number of the weight vectors in the neighborhood {@code T}.
 	 * 
@@ -85,7 +117,7 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 	}
 
 	/**
-	 * Sets the number of weight vectors {@code mu}.
+	 * Sets the number of weight vectors {@code T}.
 	 * 
 	 * @param T
 	 *            The number of the weight vectors
@@ -93,6 +125,46 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 	public void setWeightVectorsPerNeighborhood(int T) {
 		this.T = T;
 	}
+
+	/**
+	 * Returns The number of objectives per subproblem {@code m}.
+	 * 
+	 * @return The number of objectives per subproblem
+	 */
+	public int getObjectivesCount() {
+		return m;
+	}
+
+	/**
+	 * Sets the number of objectives per subproblem {@code m}.
+	 * 
+	 * @param m
+	 *            The number of objectives per subproblem
+	 */
+	public void setObjectivesCount(int m) {
+		this.m = m;
+	}
+
+	/**
+	 * Returns The number of new Individuals per iteration {@code newIndividuals}.
+	 * 
+	 * @return The number of new Individuals per iteration
+	 */
+	public int getnewIndividualsCount() {
+		return newIndividuals;
+	}
+
+	/**
+	 * Sets the number of new individuals per iteration {@code newIndividuals}.
+	 * 
+	 * @param newIndividuals
+	 *            The number of new Individuals per iteration
+	 */
+	public void setNewIndividualsCount(int newIndividuals) {
+		this.newIndividuals = newIndividuals;
+	}
+
+	
 
 
 	/*

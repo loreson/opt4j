@@ -24,6 +24,7 @@ package org.opt4j.optimizers.ea.moead;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.opt4j.core.Individual;
 import org.opt4j.core.IndividualFactory;
@@ -58,6 +59,8 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 
 	protected final int T;
 
+	protected final int newIndividuals;
+
 	protected final Selector selector;
 
 	protected final Mating mating;
@@ -86,28 +89,30 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 	protected Individual[] x;
 
 	/**
-	 * Constructs an {@link EvolutionaryAlgorithm} with a {@link Population}, an
-	 * {@link IndividualFactory}, a {@link IndividualCompleter}, a
-	 * {@link Selector}, a {@link Mating}, the number of generations, the
-	 * population size, the number of parents, the number of offspring, and a
-	 * random number generator.
+	 * Constructs an {@link MultiObjectiveEvolutionaryAlgorithm} with a {@link Population}, a
+	 * {@link Selector}, a {@link mating}, a
+	 * {@link decomposition}, a {@link repait}, the number of generations, the
+	 * number of objective functions per subproblem, the number of subproblems, the number of wiehgt vectors in the neighborhood, 
+	 * and the number of new Individuals per iteration.
 	 * 
 	 * @param population
 	 *            the population
-	 * @param individualFactory
-	 *            the individual factory
-	 * @param completer
-	 *            the completer
 	 * @param selector
 	 *            the selector
 	 * @param mating
-	 *            the mating
+	 *            the mating method
+	 * @param decomposition
+	 * 			  the decomposition method
+	 * @param repair
+	 * 			  the repair method
 	 * @param m
 	 * 			  the number of objective functions	and entries of a weight vector
 	 * @param N
 	 *            the number of subproblems
 	 * @param T
 	 *            the number of weight vectors in the neighborhood
+	 * @param newIndividuals
+	 * 			  the number of new Individuals created by the mating method
 	 */
 	@Inject
 	public MultiobjectiveEvolutionaryAlgorithm(
@@ -121,7 +126,8 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 			Repair repair,
 			@Constant(value = "m", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int m,
 			@Constant(value = "N", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int N,
-			@Constant(value = "T", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int T ) {
+			@Constant(value = "T", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int T,
+			@Constant(value = "newIndividuals", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int newIndividuals ) {
 		this.selector = selector;
 		this.mating = mating;
 		this.decomposition = decomposition;
@@ -132,6 +138,7 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 		this.m = m;
 		this.N = N;
 		this.T = T;
+		this.newIndividuals = newIndividuals;
 		this.population = population;
 
 		if (m <= 0) {
@@ -140,9 +147,11 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 		if (N <= 0) {
 			throw new IllegalArgumentException("Invalid N: " + N);
 		}
-
 		if (T <= 0) {
 			throw new IllegalArgumentException("Invalid T: " + T);
+		}
+		if (newIndividuals <= 0) {
+			throw new IllegalArgumentException("Invalid newIndividuals: " + newIndividuals);
 		}
 	}
 
@@ -193,27 +202,30 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 			for(int j = 0; j < parents.size(); j++)
 				parentCollection.add(x[parents.get(i)]);
 			
-			Individual offspring = mating.getOffspring( 1 , parentCollection).iterator().next();
+			Collection<Individual> offspring = mating.getOffspring( newIndividuals , parentCollection);
+			Individual best = offspring.iterator().next();
 			
 			// Step 2.2) Improvement
-			offspring = repair.repairSolution(offspring);
-			
+			best = repair.repairSolution(best);
+			while(offspring.iterator().hasNext()){
+				Individual toCheck = offspring.iterator().next();
+				if(toCheck.getObjectives().weaklyDominates(best.getObjectives()))
+					best = toCheck;
+			}
 			// Step 2.3) Update of z ???
 
 			// Step 2.4) Update of Neighboring Solutions
 			// Unsure about this
-			Objectives objectives = offspring.getObjectives();
+			Objectives objectives = best.getObjectives();
 			for(int j = 0; j < T; j++){
 				Individual toCheck = x[ neighborhoods.get(i)[j] ];
 				if(objectives.weaklyDominates(toCheck.getObjectives() )){
-					// population.remove(toCheck);
-					// population.add(offspring);
-					x[ neighborhoods.get(i)[j] ] = offspring;
+					x[ neighborhoods.get(i)[j] ] = best;
 				}
 			}
 
 			// Step 2.5) Update of EP
-			externalPopulation.update(offspring);
+			externalPopulation.update(best);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 Opt4J
+ * Copyright (c) 2020 Opt4J
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,10 @@ import org.opt4j.core.Individual;
 
 public interface Repair {
 
-    // TODO add objectives as input
+    /* Repairs and improves an Individual regarding its objectives
+    *
+    * @param solution The Individual to improve
+    * @return the improved Individual
+    */
     public Individual repairSolution(Individual solution);
 }
