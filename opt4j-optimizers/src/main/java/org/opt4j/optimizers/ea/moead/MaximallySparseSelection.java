@@ -29,18 +29,7 @@ import java.util.List;
 
 class MaximallySparseSelection implements Selection
 {
-    private double distance(WeightVector i, WeightVector j)
-    {
-        if(i.size() != j.size()){
-            throw new IllegalArgumentException("distance between vectors of different dimension is not defined");
-        }
-        double dist = 0;
-        for(int l = 0; l< i.size(); l++){
-            double x = i.get(l) - j.get(l);
-            dist += x*x;
-        }
-        return Math.sqrt(dist);
-    }
+
     private int getDimension(List<WeightVector> initial, int N)
     {
         int M;
@@ -80,7 +69,7 @@ class MaximallySparseSelection implements Selection
             for(int j = 0; j < initial.size(); j++){
                 double dist = 0;
                 for(int i =0; i< k; i++){
-                    dist+= distance(result.get(i),initial.get(j));
+                    dist+=result.get(i).euclideanDistance(initial.get(j));
                 }
                 if(dist > maxDist){
                     maxDist = dist;
