@@ -22,19 +22,13 @@
 package org.opt4j.optimizers.ea.moead;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.Rule;
-
-import org.junit.rules.ExpectedException;
 
 public class DecompositionDefaultTest {
     @Test
