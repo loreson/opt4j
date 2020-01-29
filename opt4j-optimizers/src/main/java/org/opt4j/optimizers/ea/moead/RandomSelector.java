@@ -41,14 +41,18 @@ public class RandomSelector implements Selector {
 		}
 
 		if (neighbourhoodSize < numberOfParents) {
-			throw new IllegalArgumentException("Can not pick " + numberOfParents + " from neighbourhood containing "
-					+ neighbourhoodSize + " item(s)!");
+			throw new IllegalArgumentException("Can not pick " + numberOfParents
+					+ " from neighbourhood which only contains " + neighbourhoodSize + " item(s)!");
 		}
 	}
 
 	private void assertIsValidArray(int[] neighbourhood) {
 		if (neighbourhood == null) {
 			throw new NullPointerException("Provided neighbourhood array is null!");
+		}
+
+		if (neighbourhood.length < 2) {
+			throw new IllegalArgumentException("Provided neighbourhood array is smaller than 2!");
 		}
 	}
 }

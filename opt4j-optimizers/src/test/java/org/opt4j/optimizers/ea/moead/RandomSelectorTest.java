@@ -18,16 +18,23 @@ public class RandomSelectorTest {
 
 	@Test
 	public void testNeighbourhoodIsNull() {
-		int[] neighbourhood = null;
-
 		RandomSelector rs = new RandomSelector();
 		thrown.expect(NullPointerException.class);
-		rs.selectParents(neighbourhood, 2);
+		rs.selectParents(null, 2);
 	}
 
 	@Test
 	public void testNeighbourhoodIsEmpty() {
 		int[] neighbourhood = new int[] {};
+
+		RandomSelector rs = new RandomSelector();
+		thrown.expect(IllegalArgumentException.class);
+		rs.selectParents(neighbourhood, 2);
+	}
+
+	@Test
+	public void testNeighbourhoodSizeIsOne() {
+		int[] neighbourhood = new int[] { 1 };
 
 		RandomSelector rs = new RandomSelector();
 		thrown.expect(IllegalArgumentException.class);
@@ -63,6 +70,16 @@ public class RandomSelectorTest {
 		assertNotEquals(result.get(1), null);
 		assertEquals(result.get(0), Integer.valueOf(neighbourhood[0]));
 		assertEquals(result.get(1), Integer.valueOf(neighbourhood[1]));
+	}
+
+	@Test
+	public void testSelectParentsWithNeighbourhoodSizeSmallerParentsSize() {
+		int[] neighbourhood = new int[] { 1, 2 };
+		List<Integer> result;
+
+		RandomSelector rs = new RandomSelector();
+		thrown.expect(IllegalArgumentException.class);
+		result = rs.selectParents(neighbourhood, 3);
 	}
 
 	@Test
