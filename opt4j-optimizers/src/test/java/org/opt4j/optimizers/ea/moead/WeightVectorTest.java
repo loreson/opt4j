@@ -80,30 +80,5 @@ public class WeightVectorTest
         thrown.expect(IllegalArgumentException.class);
         vec0.dot(vec3);
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void EuclideanDistanceThrowsExceptionTest()
-    {
-        WeightVector vec0 = new WeightVector(new double[]{1,1});
-        WeightVector vec1 = new WeightVector(new double[]{1,1,1});
-        vec0.euclideanDistance(vec1);
-    }
-
-    @Test 
-    public void EuclideanDistanceBasicFunctionalityTest()
-    {
-        WeightVector vec0 = new WeightVector(new double[]{1,1});
-        
-        WeightVector vec1 = new WeightVector(new double[]{1,2});
-        WeightVector vec2 = new WeightVector(new double[]{2,2});
-        WeightVector vec3 = new WeightVector(new double[]{2,2,2});
-        WeightVector vec4 = new WeightVector(new double[]{0.5, 1, 1.5});
-        
-        assertEquals(0, vec0.euclideanDistance(vec0), 2*Math.ulp(3.0));
-        assertEquals(1, vec0.euclideanDistance(vec1), 2*Math.ulp(3.0));
-        assertEquals(Math.sqrt(2), vec0.euclideanDistance(vec2), 2*Math.ulp(3.0));
-        assertEquals(Math.sqrt(14)/2, vec3.euclideanDistance(vec4), 2*Math.ulp(3.0));
-    }
-
 }
 
