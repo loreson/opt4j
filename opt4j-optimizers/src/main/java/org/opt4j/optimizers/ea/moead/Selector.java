@@ -27,8 +27,12 @@ import java.util.List;
 public interface Selector {
 
     /**
-     * @param m
-     *      number of created genotypes 
+     * Selects parents from the provided neighbourhood
+     * 
+     * @param neighbourhood - the indices of the neighbourhood array
+     * @param numberOfParents - the number of parents
+     * 
+     * @return collection of parents
      * */ 
-    public List<Integer> selectParents(int[] neighbourhood);
+    public List<Integer> selectParents(int[] neighbourhood, int numberOfParents);
 }
