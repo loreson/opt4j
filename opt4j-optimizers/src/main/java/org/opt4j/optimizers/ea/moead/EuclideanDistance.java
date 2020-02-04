@@ -8,8 +8,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -19,12 +19,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
- 
 
 package org.opt4j.optimizers.ea.moead;
 
-import java.util.List;
+/**
+ * 
+ * The {@link EuclideanDistance} computes the euclidean distance between two given vectors
+ * 
+ * @author Kai Amann
+ *
+ */
+public class EuclideanDistance implements SimilarityMeasure {
 
-public interface NeighbourhoodCreation{
-    public int[] create(List<WeightVector> weights, int neighbourhoodSize);
+    /**
+     * Computes the euclidean distance between two {@link WeightVector}s.
+     * 
+     * @param v1 the first {@link WeightVector}
+     * @param v2 the second {@link WeightVector}
+     * @return the euclidean distance
+     */
+    public double calculateSimilarity(WeightVector v1, WeightVector v2){
+            if (v1.entries.length != v2.entries.length){
+                throw new IllegalArgumentException("Can't compute euclidean distance of vectors with different dimensions");
+            }
+            double distanceSquared = 0;
+            for(int i = 0; i < v1.entries.length; i++){
+                distanceSquared += (v1.entries[i] - v2.entries[i]) * (v1.entries[i] - v2.entries[i]);
+            }
+            return Math.sqrt(distanceSquared);
+    }
 }

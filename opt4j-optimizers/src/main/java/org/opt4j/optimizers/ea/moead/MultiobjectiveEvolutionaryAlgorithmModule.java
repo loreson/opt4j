@@ -59,6 +59,11 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 	@Order(3)
 	protected int T = 10;
 
+	@Constant(value = "numberOfParents", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
+	@Info("The number of Parents from which the new individual will be created from.")
+	@Order(4)
+	protected int numberOfParents = 2;
+
 	@Constant(value = "newIndividuals", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
 	@Info("The number of new solutions per iteration")
 	@Order(4)
