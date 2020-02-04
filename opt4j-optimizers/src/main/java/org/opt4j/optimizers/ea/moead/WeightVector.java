@@ -19,44 +19,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *******************************************************************************/
- 
+
 package org.opt4j.optimizers.ea.moead;
 
 public class WeightVector {
 
-    double[] entries;
+	private double[] entries;
 
-	public double L2Norm(){
+	public double L2Norm() {
 		double result = 0.0;
-		for(double elem: entries)
-		{
-			result+= elem*elem;
+		for (double elem : entries) {
+			result += elem * elem;
 		}
 		return Math.sqrt(result);
-    }
-
-    public int size(){
-        return entries.length;
-    }
-
-    WeightVector(double[] entries){
-        this.entries = entries;
 	}
-	
-	public double get(int index){
+
+	public int size() {
+		return entries.length;
+	}
+
+	WeightVector(double[] entries) {
+		assertIsValidDoubleArray(entries);
+		this.entries = entries;
+	}
+
+	public double get(int index) {
+		assertIsValidInteger(index);
 		return this.entries[index];
 	}
 
-	public double dot(WeightVector v){
-		if (entries.length != v.entries.length)
-		{
-			throw new IllegalArgumentException("Can't take dot Product of Vectors with different size");
-		}
+	public double dot(WeightVector v) {
+		assertIsValidWeightVector(v);
+
 		double result = 0.0;
-		for(int i =0; i<entries.length; i++)
-		{
-			result+= entries[i]*v.entries[i];
+		for (int i = 0; i < entries.length; i++) {
+			result += entries[i] * v.entries[i];
 		}
 		return result;
+	}
+
+	private void assertIsValidWeightVector(WeightVector v) {
+		if (entries.length != v.entries.length) {
+			throw new IllegalArgumentException("Can't take dot product of vectors with different sizes");
+		}
+	}
+
+	private void assertIsValidInteger(int index) {
+		if (index < 0 || index >= this.entries.length) {
+			throw new ArrayIndexOutOfBoundsException("Provided index is not within bounds");
+		}
+	}
+
+	private void assertIsValidDoubleArray(double[] entries) {
+		if (entries == null) {
+			throw new IllegalArgumentException("Provided entries array is null!");
+		}
 	}
 }
