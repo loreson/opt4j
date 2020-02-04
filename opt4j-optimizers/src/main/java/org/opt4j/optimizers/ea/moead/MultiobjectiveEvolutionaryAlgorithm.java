@@ -59,6 +59,8 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 
 	protected final int T;
 
+	protected final int numberOfParents;
+
 	protected final int newIndividuals;
 
 	protected final Selector selector;
@@ -73,8 +75,6 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 
 	// maybe we don't need this? Is it possible to get an initial population?	
 	private final PopulationInitialization populationInitialization;
-
-	private final ReferencePointCreation referencePointCreation;
 	
 	private final Repair repair; 
 
@@ -122,22 +122,22 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 			Decomposition decomposition,
 			NeighbourhoodCreation neighbourhoodCreation,
 			PopulationInitialization populationInitialization,
-			ReferencePointCreation referencePointCreation,
 			Repair repair,
 			@Constant(value = "m", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int m,
 			@Constant(value = "N", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int N,
 			@Constant(value = "T", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int T,
+			@Constant(value = "numberOfParents", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int numberOfParents,
 			@Constant(value = "newIndividuals", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int newIndividuals ) {
 		this.selector = selector;
 		this.mating = mating;
 		this.decomposition = decomposition;
 		this.neighbourhoodCreation = neighbourhoodCreation;
 		this.populationInitialization = populationInitialization;
-		this.referencePointCreation = referencePointCreation;
 		this.repair = repair;
 		this.m = m;
 		this.N = N;
 		this.T = T;
+		this.numberOfParents = numberOfParents;
 		this.newIndividuals = newIndividuals;
 		this.population = population;
 
@@ -181,11 +181,6 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 		x = new Individual[N];
 		population.toArray(x);
 		
-		// Step 1.4
-		referencePoints = new double[m];
-		for ( int i = 0; i < m; i++){
-			referencePoints[i] = referencePointCreation.create();
-		}
 	}
 
 	/*
@@ -197,7 +192,7 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 	public void next() throws TerminationException {
 		for( int i = 0; i < N; i++) {
 			// Step 2.1) Reproduction
-			List<Integer> parents = selector.selectParents(neighborhoods.get(i));
+			List<Integer> parents = selector.selectParents(neighborhoods.get(i), 2);
 			List<Individual> parentCollection = new ArrayList<>(parents.size());
 			for(int j = 0; j < parents.size(); j++)
 				parentCollection.add(x[parents.get(i)]);
@@ -212,7 +207,6 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 				if(toCheck.getObjectives().weaklyDominates(best.getObjectives()))
 					best = toCheck;
 			}
-			// Step 2.3) Update of z ???
 
 			// Step 2.4) Update of Neighboring Solutions
 			// Unsure about this
