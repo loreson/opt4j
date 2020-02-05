@@ -126,6 +126,7 @@ public class EvolutionaryAlgorithm implements IterativeOptimizer {
 	@Override
 	public void initialize() {
 		selector.init(alpha + lambda);
+		System.out.println(population.isEmpty());
 	}
 
 	/*

@@ -23,7 +23,9 @@
 package org.opt4j.optimizers.ea.moead;
 
 import java.util.List;
+import com.google.inject.ImplementedBy;
 
+@ImplementedBy(RandomSelector.class)
 public interface Selector {
 
     /**

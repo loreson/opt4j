@@ -23,10 +23,14 @@
 package org.opt4j.optimizers.ea.moead;
 
 import org.opt4j.core.config.annotations.Info;
+import org.opt4j.core.config.annotations.Ignore;
 import org.opt4j.core.config.annotations.Order;
 import org.opt4j.core.optimizer.MaxIterations;
 import org.opt4j.core.optimizer.OptimizerModule;
 import org.opt4j.core.start.Constant;
+
+import org.opt4j.optimizers.ea.CrossoverRate;
+import org.opt4j.optimizers.ea.ConstantCrossoverRate;
 
 /**
  * The {@link MultiobjectiveEvolutionaryAlgorithmModule} configures the
@@ -49,15 +53,15 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 	@Order(1)
 	protected int m = 5;
 
-	@Constant(value = "N", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
+	@Constant(value = "n", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
 	@Info("The number of the subproblems considered.")
 	@Order(2)
-	protected int N = 10;
+	protected int n = 10;
 
-	@Constant(value = "T", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
+	@Constant(value = "t", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
 	@Info("The number of the weight vectors in the neighborhood.")
 	@Order(3)
-	protected int T = 10;
+	protected int t = 10;
 
 	@Constant(value = "numberOfParents", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
 	@Info("The number of Parents from which the new individual will be created from.")
@@ -66,10 +70,31 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 
 	@Constant(value = "newIndividuals", namespace = MultiobjectiveEvolutionaryAlgorithm.class)
 	@Info("The number of new solutions per iteration")
-	@Order(4)
+	@Order(5)
 	protected int newIndividuals = 1;
 
+	@Info("Performs a crossover operation with this given rate.")
+	@Order(6)
+	@Constant(value = "rate", namespace = ConstantCrossoverRate.class)
+	protected double crossoverRate = 0.95;
 
+	
+	@Ignore
+	protected CrossoverRateType crossoverRateType = CrossoverRateType.CONSTANT;
+	
+	/**
+	 * The {@link CrossoverRateType} allows to choose between different types of
+	 * crossover rates.
+	 * 
+	 * @author glass
+	 * 
+	 */
+	public enum CrossoverRateType {
+		/**
+		 * Use a constant crossover rate.
+		 */
+		CONSTANT;
+	}
 
 	/**
 	 * Returns the number of generations.
@@ -91,52 +116,12 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 		this.generations = generations;
 	}
 
-	
-	/**
-	 * Returns the number of subproblems.
-	 * 
-	 * @return the number of subproblems
-	 */
-	public int getSubproblemsCount() {
-		return N;
-	}
-
-	/**
-	 * Sets the number of subproblems.
-	 * 
-	 * @param N the number of subproblems
-	 */
-	public void setSubproblemsCount(int N) {
-		this.N = N;
-	}
-
-	
-
-	/**
-	 * Returns The number of the weight vectors in the neighborhood {@code T}.
-	 * 
-	 * @return The number of the weight vectors in the neighborhood
-	 */
-	public int getWeightVectorsPerNeighborhood() {
-		return T;
-	}
-
-	/**
-	 * Sets the number of weight vectors {@code T}.
-	 * 
-	 * @param T
-	 *            The number of the weight vectors
-	 */
-	public void setWeightVectorsPerNeighborhood(int T) {
-		this.T = T;
-	}
-
 	/**
 	 * Returns The number of objectives per subproblem {@code m}.
 	 * 
 	 * @return The number of objectives per subproblem
 	 */
-	public int getObjectivesCount() {
+	public int getM() {
 		return m;
 	}
 
@@ -146,8 +131,66 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 	 * @param m
 	 *            The number of objectives per subproblem
 	 */
-	public void setObjectivesCount(int m) {
+	public void setM(int m) {
 		this.m = m;
+	}
+	
+	/**
+	 * Returns the number of subproblems.
+	 * 
+	 * @return the number of subproblems
+	 */
+	public int getN() {
+		return n;
+	}
+
+	/**
+	 * Sets the number of subproblems.
+	 * 
+	 * @param N the number of subproblems
+	 */
+	public void setN(int n) {
+		this.n = n;
+	}
+
+	
+
+	/**
+	 * Returns The number of the weight vectors in the neighborhood {@code T}.
+	 * 
+	 * @return The number of the weight vectors in the neighborhood
+	 */
+	public int getT() {
+		return t;
+	}
+
+	/**
+	 * Sets the number of weight vectors {@code T}.
+	 * 
+	 * @param T
+	 *            The number of the weight vectors
+	 */
+	public void setT(int t) {
+		this.t = t;
+	}
+
+	/**
+	 * Returns the number of parents from which to create new individuals {@code numberOfParents}.
+	 * 
+	 * @return the number of parents
+	 */
+	public int getNumberOfParents() {
+		return numberOfParents;
+	}
+
+	/**
+	 * Sets the number of parents from which to create new individuals {@code numberOfParents}.
+	 * 
+	 * @param newIndividuals
+	 *            The number of new Individuals per iteration
+	 */
+	public void setNumberOfParents(int numberOfParents) {
+		this.numberOfParents = numberOfParents;
 	}
 
 	/**
@@ -155,7 +198,7 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 	 * 
 	 * @return The number of new Individuals per iteration
 	 */
-	public int getnewIndividualsCount() {
+	public int getnewIndividuals() {
 		return newIndividuals;
 	}
 
@@ -165,12 +208,47 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 	 * @param newIndividuals
 	 *            The number of new Individuals per iteration
 	 */
-	public void setNewIndividualsCount(int newIndividuals) {
+	public void setnewIndividuals(int newIndividuals) {
 		this.newIndividuals = newIndividuals;
 	}
-
 	
+	/**
+	 * Returns the type of crossover rate that is used.
+	 * 
+	 * @return the crossoverRateType
+	 */
+	public CrossoverRateType getCrossoverRateType() {
+		return crossoverRateType;
+	}
 
+	/**
+	 * Sets the type of crossover rate to use.
+	 * 
+	 * @param crossoverRateType
+	 *            the crossoverRateType to set
+	 */
+	public void setCrossoverRateType(CrossoverRateType crossoverRateType) {
+		this.crossoverRateType = crossoverRateType;
+	}
+
+	/**
+	 * Returns the used crossover rate.
+	 * 
+	 * @return the crossoverRate
+	 */
+	public double getCrossoverRate() {
+		return crossoverRate;
+	}
+
+	/**
+	 * Sets the crossover rate.
+	 * 
+	 * @param crossoverRate
+	 *            the crossoverRate to set
+	 */
+	public void setCrossoverRate(double crossoverRate) {
+		this.crossoverRate = crossoverRate;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -180,5 +258,6 @@ public class MultiobjectiveEvolutionaryAlgorithmModule extends OptimizerModule {
 	@Override
 	public void config() {
 		bindIterativeOptimizer(MultiobjectiveEvolutionaryAlgorithm.class);
+		bind(CrossoverRate.class).to(ConstantCrossoverRate.class).in(SINGLETON);
 	}
 }

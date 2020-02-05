@@ -26,12 +26,16 @@ import java.util.List;
 
 import org.opt4j.optimizers.ea.moead.WeightVector;
 
+import com.google.inject.ImplementedBy;
+
+
 /**
  * The {@link Decompostition} interface is used to create weight vectors.
  * 
  * @author 
  * 
  */
+@ImplementedBy(DecompositionDefault.class)
 public interface Decomposition {
 
     /*

@@ -24,7 +24,7 @@ package org.opt4j.optimizers.ea.moead;
 
 public class WeightVector {
 
-	private double[] entries;
+	double[] entries;
 
 	public double L2Norm() {
 		double result = 0.0;

@@ -23,7 +23,9 @@
 package org.opt4j.optimizers.ea.moead;
 
 import org.opt4j.core.Individual;
+import com.google.inject.ImplementedBy;
 
+@ImplementedBy(DefaultRepair.class)
 public interface Repair {
 
     /* Repairs and improves an Individual regarding its objectives

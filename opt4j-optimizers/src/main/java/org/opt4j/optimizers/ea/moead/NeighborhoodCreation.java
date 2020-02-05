@@ -79,8 +79,8 @@ public class NeighborhoodCreation {
         if (v == null) {
             throw new IllegalArgumentException("Reference weight vector cannot be null!");
         }
-        if (neighborhoodSize == 0) {
-            throw new IllegalArgumentException("Neighborhood size cannot be 0!");
+        if (neighborhoodSize <= 0) {
+            throw new IllegalArgumentException("Neighborhood size cannot be equal or smaller than 0!");
         }
 
         // calculate distance to all candidates

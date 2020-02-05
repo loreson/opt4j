@@ -25,17 +25,16 @@ package org.opt4j.optimizers.ea.moead;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.opt4j.core.Individual;
-import org.opt4j.core.IndividualFactory;
 import org.opt4j.core.Objectives;
+import org.opt4j.core.IndividualFactory;
 import org.opt4j.core.optimizer.IndividualCompleter;
 import org.opt4j.core.optimizer.IterativeOptimizer;
 import org.opt4j.core.optimizer.Population;
 import org.opt4j.core.optimizer.TerminationException;
 import org.opt4j.core.start.Constant;
-import org.opt4j.operators.crossover.Crossover;
-import org.opt4j.operators.mutate.Mutate;
 import org.opt4j.optimizers.ea.Mating;
 import org.opt4j.core.optimizer.Archive;
 import org.opt4j.core.common.archive.UnboundedArchive;
@@ -43,25 +42,29 @@ import org.opt4j.core.common.archive.UnboundedArchive;
 import com.google.inject.Inject;
 
 /**
- * TODO:
- * The {@link EvolutionaryAlgorithm} is an implementation of an Evolutionary
- * Algorithm based on the operators {@link Crossover} and {@link Mutate}. It
- * uses a {@link Selector} for the mating and environmental selection.
+ * The {@link MultiobjectiveEvolutionaryAlgorithm} is an implementation of an Evolutionary
+ * Algorithm that uses {@link Decomposition} on a Multiobjective optimization Problem.
+ * It is based on the ideas introduced in the paper 
+ * "MOEA/D: A Multiobjective Evolutionary Algorithm Based on Decomposition" written by Qingfu Zhang and Hui Li.
  * 
- * @author lukasiewycz, glass
+ * @author Johannes-Sebastian See
  * 
  */
 public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 
 	protected final int m;
 
-	protected final int N;
+	protected final int n;
 
-	protected final int T;
+	protected final int t;
 
 	protected final int numberOfParents;
 
 	protected final int newIndividuals;
+
+	private final IndividualFactory individualFactory;
+
+	private final IndividualCompleter completer;
 
 	protected final Selector selector;
 
@@ -69,12 +72,9 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 
 	protected final Decomposition decomposition;
 
-	protected final NeighbourhoodCreation neighbourhoodCreation;
+	protected final NeighborhoodCreation neighborhoodCreation;
 
 	private final Population population;
-
-	// maybe we don't need this? Is it possible to get an initial population?	
-	private final PopulationInitialization populationInitialization;
 	
 	private final Repair repair; 
 
@@ -107,9 +107,9 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 	 * 			  the repair method
 	 * @param m
 	 * 			  the number of objective functions	and entries of a weight vector
-	 * @param N
+	 * @param n
 	 *            the number of subproblems
-	 * @param T
+	 * @param t
 	 *            the number of weight vectors in the neighborhood
 	 * @param newIndividuals
 	 * 			  the number of new Individuals created by the mating method
@@ -117,26 +117,28 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 	@Inject
 	public MultiobjectiveEvolutionaryAlgorithm(
 			Population population,
+			IndividualFactory individualFactory,
+			IndividualCompleter completer,
 			Selector selector,
 			Mating mating,
 			Decomposition decomposition,
-			NeighbourhoodCreation neighbourhoodCreation,
-			PopulationInitialization populationInitialization,
+			NeighborhoodCreation neighborhoodCreation,
 			Repair repair,
 			@Constant(value = "m", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int m,
-			@Constant(value = "N", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int N,
-			@Constant(value = "T", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int T,
+			@Constant(value = "n", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int n,
+			@Constant(value = "t", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int t,
 			@Constant(value = "numberOfParents", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int numberOfParents,
 			@Constant(value = "newIndividuals", namespace = MultiobjectiveEvolutionaryAlgorithm.class) int newIndividuals ) {
 		this.selector = selector;
+		this.individualFactory = individualFactory;
+		this.completer = completer;
 		this.mating = mating;
 		this.decomposition = decomposition;
-		this.neighbourhoodCreation = neighbourhoodCreation;
-		this.populationInitialization = populationInitialization;
+		this.neighborhoodCreation = neighborhoodCreation;
 		this.repair = repair;
 		this.m = m;
-		this.N = N;
-		this.T = T;
+		this.n = n;
+		this.t = t;
 		this.numberOfParents = numberOfParents;
 		this.newIndividuals = newIndividuals;
 		this.population = population;
@@ -144,14 +146,17 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 		if (m <= 0) {
 			throw new IllegalArgumentException("Invalid m: " + m);
 		}
-		if (N <= 0) {
-			throw new IllegalArgumentException("Invalid N: " + N);
+		if (n <= 0) {
+			throw new IllegalArgumentException("Invalid N: " + n);
 		}
-		if (T <= 0) {
-			throw new IllegalArgumentException("Invalid T: " + T);
+		if (t <= 0) {
+			throw new IllegalArgumentException("Invalid T: " + t);
 		}
 		if (newIndividuals <= 0) {
 			throw new IllegalArgumentException("Invalid newIndividuals: " + newIndividuals);
+		}
+		if(numberOfParents < 1){
+			throw new IllegalArgumentException("Invalid numberOfParents: " + numberOfParents);	
 		}
 	}
 
@@ -163,23 +168,24 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 	 */
 	@Override
 	public void initialize() {
-		weights = decomposition.decompose(N, m);
+		weights = decomposition.decompose(n, m);
 		
 		// Step 1.1
 		externalPopulation = new UnboundedArchive();
 
 		// Step 1.2
-		neighborhoods = new ArrayList<>(N);
-		for( int i = 0; i < N; i++){
-			neighborhoods.add(neighbourhoodCreation.create(weights, T));
+		neighborhoods = new ArrayList<>(n);
+		for( int i = 0; i < n; i++){
+			neighborhoods.add(neighborhoodCreation.create(weights.get(i), weights, t));
 		}
 
 		// Step 1.3
-		// if(!population.isEmpty())
-			// population = populationInitialization.initialization(m);
-
-		x = new Individual[N];
-		population.toArray(x);
+		while (population.size() < n) {
+			population.add(individualFactory.create());
+		}
+			
+		x = new Individual[n];
+		x = population.toArray(x);
 		
 	}
 
@@ -190,31 +196,37 @@ public class MultiobjectiveEvolutionaryAlgorithm implements IterativeOptimizer {
 	 */
 	@Override
 	public void next() throws TerminationException {
-		for( int i = 0; i < N; i++) {
+		completer.complete(population);	
+		for( int i = 0; i < n; i++) {
 			// Step 2.1) Reproduction
-			List<Integer> parents = selector.selectParents(neighborhoods.get(i), 2);
+			List<Integer> parents = selector.selectParents(neighborhoods.get(i), numberOfParents);
 			List<Individual> parentCollection = new ArrayList<>(parents.size());
-			for(int j = 0; j < parents.size(); j++)
-				parentCollection.add(x[parents.get(i)]);
+			for(int j = 0; j < parents.size(); j++){
+				parentCollection.add(x[parents.get(j)]);
+			}
 			
 			Collection<Individual> offspring = mating.getOffspring( newIndividuals , parentCollection);
-			Individual best = offspring.iterator().next();
+			completer.complete(offspring);
+			Iterator<Individual> iter = offspring.iterator();
+			Individual best = iter.next();
 			
 			// Step 2.2) Improvement
-			best = repair.repairSolution(best);
-			while(offspring.iterator().hasNext()){
-				Individual toCheck = offspring.iterator().next();
+			while(iter.hasNext()){
+				// System.out.println(offspring.iterator().hasNext());
+				Individual toCheck = iter.next();
 				if(toCheck.getObjectives().weaklyDominates(best.getObjectives()))
 					best = toCheck;
 			}
 
+			best = repair.repairSolution(best);
 			// Step 2.4) Update of Neighboring Solutions
-			// Unsure about this
 			Objectives objectives = best.getObjectives();
-			for(int j = 0; j < T; j++){
+			for(int j = 0; j < t; j++){
 				Individual toCheck = x[ neighborhoods.get(i)[j] ];
 				if(objectives.weaklyDominates(toCheck.getObjectives() )){
 					x[ neighborhoods.get(i)[j] ] = best;
+					population.remove(toCheck);
+					population.add(best);
 				}
 			}
 
