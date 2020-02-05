@@ -48,81 +48,13 @@ public class MaximallySparseSelectionTest{
     public void ThreeObjectiveTest(){
         Selection select = new MaximallySparseSelection();
         List<WeightVector> vectors = new ArrayList<WeightVector>();
-        vectors.add(new WeightVector(new double[] {0.1, 0.4, 0.5}));
-        List<WeightVector> selected = select.select(vectors,3);
-        assertEquals(3, selected.size());
-        int v100 = 0;
-        int v010 = 0;
-        int v001 = 0;
-        for(WeightVector vec : selected)
-        {
-            assertEquals(3, vec.size());
-            if(vec.get(0) == 1.0)
-            {
-                v100 += 1;
-                assertEquals(0.0, vec.get(1), 0.0);
-                assertEquals(0.0, vec.get(2), 0.0);
-            }
-            if(vec.get(1) == 1.0 )
-            {
-                v010 += 1;
-                assertEquals(0.0, vec.get(0), 0.0);
-                assertEquals(0.0, vec.get(2), 0.0);
-            }
-            if(vec.get(2) == 1.0)
-            {
-                v001 += 1;
-
-                assertEquals(0.0, vec.get(0), 0.0);
-                assertEquals(0.0, vec.get(1), 0.0);
-            }
-        }
-        assertEquals(1, v100);
-        assertEquals(1, v010);
-        assertEquals(1, v001);
-        selected = select.select(vectors,4);
-        int non_extrema = 0;
-        assertEquals(4, selected.size());
-        v100 = 0;
-        v010 = 0;
-        v001 = 0;
-        for(WeightVector vec : selected)
-        {
-            boolean extrema = false;
-            assertEquals(3, vec.size());
-            if(vec.get(0) == 1.0)
-            {
-                v100 += 1;
-                assertEquals(0.0, vec.get(1), 0.0);
-                assertEquals(0.0, vec.get(2), 0.0);
-                extrema = true;
-            }
-            if(vec.get(1) == 1.0 )
-            {
-                v010 += 1;
-                assertEquals(0.0, vec.get(0), 0.0);
-                assertEquals(0.0, vec.get(2), 0.0);
-                extrema = true;
-            }
-            if(vec.get(2) == 1.0)
-            {
-                v001 += 1;
-
-                assertEquals(0.0, vec.get(0), 0.0);
-                assertEquals(0.0, vec.get(1), 0.0);
-                extrema = true;
-            }
-            if(!extrema)
-            {
-                non_extrema += 1;
-                assertEquals(0.1, vec.get(0), 0.0);
-                assertEquals(0.4, vec.get(1), 0.0);
-                assertEquals(0.5, vec.get(2), 0.0);
-            }
-        }
-        assertEquals(1, v100);
-        assertEquals(1, v010);
-        assertEquals(1, v001);
+        vectors.add(new WeightVector(new double[] {1/3.0, 1/3.0, 1/3.0}));
+        vectors.add(new WeightVector(new double[]{0.1, 0.4, 0.5}));
+        vectors.add(new WeightVector(new double[]{0.9, 0, 0.1}));
+        List<WeightVector> selected = select.select(vectors, 6);
+        assertEquals(6, selected.size());
+        assertEquals(0.9, selected.get(3).get(0), 0.0);
+        assertEquals(0.1, selected.get(4).get(0), 0.0);
+        assertEquals(1/3.0, selected.get(5).get(0), 0.0);
     }
-
 }
